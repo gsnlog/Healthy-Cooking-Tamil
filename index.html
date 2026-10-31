@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ஆரோக்கிய உணவுக் களஞ்சியம் & டயட் ஆப்</title>
+    <!-- Web App Manifest for Native App Install -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuDgrOCrgOCrjeCtoeCosOCrjeCkrOCkvSDgpqngp43gpq/gp4fgpJ_gp4NCalIsCiAgInNob3J0X25hbWUiOiAiDietQXBwIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwNTk2NjkiLAogICJ0aGVtZV9jb2xvciI6ICIjMDU5NjY5Igp9">
+    <meta name="theme-color" content="#059669">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tamil Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Mukta Malar', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Mukta Malar', sans-serif;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .tab-btn.active {
+            color: #059669;
+            font-weight: 800;
+        }
+        .tab-btn.active i {
+            transform: scale(1.2);
+        }
+        .day-active {
+            background-color: #059669 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-28 select-none">
+
+    <!-- App Install Banner Prompt -->
+    <div id="installBanner" class="hidden bg-emerald-900 text-white p-3 px-4 shadow-md flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-mobile-screen-button text-emerald-300 text-lg"></i>
+            <span class="text-xs font-semibold">இதனை உங்கள் மொபைலில் ஆப்பாக நிறுவலாம்!</span>
+        </div>
+        <button id="installBtn" class="bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow transition">
+            Install App
+        </button>
+    </div>
+
+    <!-- Header Bar -->
+    <header class="bg-emerald-700 text-white p-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-notes-medical text-2xl text-emerald-200"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold leading-tight">ஆரோக்கிய உணவுக் களஞ்சியம்</h1>
+                    <p class="text-xs text-emerald-100">விரிவான டயட் & உணவு வழிகாட்டி</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto px-4 pt-4">
+
+        <!-- Global Search Bar -->
+        <div class="mb-4 relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+            <input type="text" id="globalSearch" oninput="filterFoodItems(this.value)" placeholder="உணவுப் பெயர் அல்லது குறிப்புகளைத் தேட..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-emerald-600 shadow-sm">
+        </div>
+
+        <!-- TAB 1: உணவுப் பட்டியல் (FOOD MENU - HUGE LISTS) -->
+        <section id="tab-menu" class="tab-content space-y-4">
+            
+            <div class="bg-emerald-50 border-l-4 border-emerald-600 p-3.5 rounded-r-xl">
+                <h2 class="text-base font-bold text-emerald-900">உணவு பட்டியல் (200+ உணவுகள்)</h2>
+                <p class="text-xs text-emerald-700 mt-0.5">ஒவ்வொரு தலைப்பையும் கிளிக் செய்து விரிவான உணவு பட்டியலைப் படிக்கவும்.</p>
+            </div>
+
+            <!-- Breakfast Accordion (50 items) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden food-section-card">
+                <button onclick="toggleSection('acc-bf')" class="w-full p-4 text-left flex justify-between items-center bg-slate-50 active:bg-slate-100">
+                    <span class="flex items-center space-x-3">
+                        <span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-egg"></i>
+                        </span>
+                        <div>
+                            <span class="text-base font-bold text-slate-800 block">1. காலை உணவுகள்</span>
+                            <span class="text-[11px] text-emerald-700 font-semibold">50+ விரிவான பரிந்துரைகள்</span>
+                        </div>
+                    </span>
+                    <i id="acc-bf-icon" class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="acc-bf" class="hidden p-4 border-t border-slate-100 bg-emerald-50/20 text-slate-700 space-y-2 text-xs searchable-list">
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>1. பாசிப்பயறு சுண்டல்:</b> 1 கப் வேகவைத்த பாசிப்பயறு + சீரகத் தாளிப்பு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>2. அவித்த முட்டை வெள்ளைக்கரு:</b> 2-3 முட்டைகளின் வெள்ளைக்கரு + மிளகுத்தூள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>3. முட்டைக்கோஸ் பாசிப்பயறு வதக்கல்:</b> குறைந்த எண்ணெயில் அவித்த வதக்கல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>4. தட்டுப்பயறு / காராமணி சுண்டல்:</b> 1 கப் வேகவைத்த காராமணி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>5. பன்னீர் காய்கறி பூர்ஜி:</b> 100g துருவிய பன்னீர் + குடைமிளகாய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>6. முளைகட்டிய பயறு சாலட்:</b> முளைகட்டிய பாசிப்பயறு + வெள்ளரி + எலுமிச்சை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>7. கொள்ளு சுண்டல்:</b> 1 கப் வேகவைத்த கொள்ளு + இஞ்சி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>8. காலிஃபிளவர் துருவல் வதக்கல்:</b> பூண்டு, மிளகு சேர்த்து வதக்கியது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>9. வேகவைத்த சோயா பீன்ஸ்:</b> 1 கப் அவித்த சோயா பீன்ஸ்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>10. முட்டை வெள்ளைக்கரு ஓம்லெட்:</b> 2 முட்டை வெள்ளைக்கரு + வெங்காயம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>11. வெள்ளரிக்காய் தயிர் பச்சடி:</b> குறைந்த கொழுப்பு தயிர் + வெள்ளரி துருவல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>12. சுரைக்காய் பாசிப்பயறு மசியல்:</b> 1 பெரிய கிண்ணம் சுரைக்காய் கூட்டு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>13. டோஃபு (Tofu) வெங்காயம் வதக்கல்:</b> 100g சோயா பன்னீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>14. ப்ரோக்கோலி இஞ்சி வதக்கல்:</b> வேகவைத்த ப்ரோக்கோலி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>15. கருப்பு கொண்டைக்கடலை சுண்டல்:</b> 1 கப் வேகவைத்த சென்னா.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>16. வெள்ளை கொண்டைக்கடலை சாலட்:</b> தக்காளி, வெள்ளரி சேர்த்த சுண்டல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>17. பாலக்கீரை முட்டை வதக்கல்:</b> கீரை + 2 முட்டை வெள்ளைக்கரு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>18. மஞ்சள் பூசணிக்காய் கூட்டு:</b> அவித்த பூசணி + பாசிப்பயறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>19. வேகவைத்த சோயா சங்ஸ்:</b> சோயா மீல் மேக்கர் + இஞ்சி பூண்டு வதக்கல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>20. புடலங்காய் பயறு கூட்டான்:</b> அவித்த புடலங்காய் வதக்கல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>21. காளான் முட்டை வெள்ளைக்கரு வதக்கல்:</b> காளான் + முட்டை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>22. கொய்யாப்பழ சாலட்:</b> 1 கொய்யாப்பழம் + மிளகுத்தூள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>23. பாசிப்பயறு அவித்த தண்ணீர் சூப்:</b> சத்துள்ள பயறு சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>24. பச்சை ஆப்பிள் + வேர்க்கடலை:</b> பாதி ஆப்பிள் + 10 நிலக்கடலை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>25. காய்கறி சூப் + முட்டை:</b> வெஜ் சூப் + 2 அவித்த முட்டை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>26. சுரைக்காய் & இஞ்சி சாறு:</b> 1 கிளாஸ் பசுமை சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>27. பிஞ்சு வெண்டைக்காய் சாலட்:</b> பச்சையாக வெட்டப்பட்ட வெண்டைக்காய் + எலுமிச்சை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>28. கோவைக்காய் மிளகு வதக்கல்:</b> எண்ணெய் இன்றி வதக்கிய கோவைக்காய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>29. பீன்ஸ் & குடைமிளகாய் அவித்தது:</b> லேசாக அவித்த காய்கறிகள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>30. கொள்ளு ரசம் சூப்:</b> இஞ்சி பூண்டு சேர்த்த கொள்ளு சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>31. முளைகட்டிய தட்டுப்பயறு:</b> மிளகுத்தூளிட்ட முளைகட்டிய பயறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>32. நூல்கோல் பாசிப்பயறு கூட்டு:</b> அவித்த நூல்கோல் காய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>33. சௌசௌ மிளகு மசியல்:</b> 1 பெரிய கிண்ணம் சௌசௌ.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>34. அவித்த பாசிப்பயறு தோசை (அரிசி இன்றி):</b> வெறும் பயறு மட்டும் அரைத்து செய்தது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>35. முட்டை வெண்பூசணி வதக்கல்:</b> பூசணிக்காய் + 2 முட்டை வெள்ளைக்கரு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>36. வேர்க்கடலை & காய்கறி சாலட்:</b> அவித்த நிலக்கடலை + தக்காளி, வெள்ளரி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>37. முருங்கைக்கீரை சாம்பார் சூப்:</b> தடிமனான பருப்பு சாம்பார் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>38. பன்னீர் தக்காளி பொரியல்:</b> 100g பன்னீர் வதக்கல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>39. நெல்லிக்காய் சாறு + அவித்த முட்டை:</b> 1 டம்ளர் சாறு + 2 முட்டை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>40. காளான் இஞ்சி சூப்:</b> சூடான காளான் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>41. சாம்பல் பூசணி சீரக மசியல்:</b> நீர்ச்சத்து நிறைந்த பூசணி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>42. அவித்த காராமணி சாலட்:</b> காராமணி + குடைமிளகாய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>43. முட்டைக்கோஸ் தக்காளி சூப்:</b> வெஜ் சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>44. டோஃபு & ப்ரோக்கோலி வதக்கல்:</b> சோயா பன்னீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>45. சிறுகீரை பருப்பு கடையல்:</b> அரிசியின்றி கீரை மசியல் மட்டும்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>46. ஆப்பிள் அத்திப்பிஞ்சு சாலட்:</b> பச்சை ஆப்பிள் துண்டுகள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>47. வேகவைத்த கொண்டைக்கடலை மசியல்:</b> சீரகம் தாளித்த சுண்டல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>48. அவித்த முட்டை வெள்ளைக்கரு + சுரைக்காய்:</b> ஆரோக்கிய காலை உணவு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>49. பாசிப்பயறு கீரை கூட்டு:</b> பருப்பு & சிறுகீரை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-emerald-100"><b>50. தடிமனான காய்கறி கிளியர் சூப்:</b> மிக்ஸ்டு வெஜ் சூப்.</div>
+                </div>
+            </div>
+
+            <!-- Lunch Accordion (50 items) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden food-section-card">
+                <button onclick="toggleSection('acc-lunch')" class="w-full p-4 text-left flex justify-between items-center bg-slate-50 active:bg-slate-100">
+                    <span class="flex items-center space-x-3">
+                        <span class="w-9 h-9 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-bowl-rice"></i>
+                        </span>
+                        <div>
+                            <span class="text-base font-bold text-slate-800 block">2. மதிய உணவுகள்</span>
+                            <span class="text-[11px] text-teal-700 font-semibold">50+ விரிவான பரிந்துரைகள்</span>
+                        </div>
+                    </span>
+                    <i id="acc-lunch-icon" class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="acc-lunch" class="hidden p-4 border-t border-slate-100 bg-teal-50/20 text-slate-700 space-y-2 text-xs searchable-list">
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>1. சுரைக்காய் கூட்டு:</b> பாசிப்பயறு சேர்த்து எண்ணெய் இன்றி சமைத்தது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>2. சிறுகீரை பொரியல்:</b> சீரகம், வெங்காயம் போட்ட சிறுகீரை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>3. மணத்தக்காளி கீரை கடையல்:</b> கல்லீரலுக்கு மிகவும் சிறந்தது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>4. காலிஃபிளவர் ரைஸ்:</b> காலிஃபிளவர் துருவி வதக்கியது (அரிசிக்கு பதில்).</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>5. வெண்டைக்காய் பொரியல்:</b> குறைந்த எண்ணெயில் வதக்கியது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>6. கோவைக்காய் வதக்கல்:</b> ரத்த சர்க்கரையைக் கட்டுப்படுத்தும்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>7. முருங்கைக்காய் சாம்பார் சூப்:</b> பருப்பு முருங்கை சாம்பார்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>8. பீன்ஸ் & கேரட் கூட்டு:</b> அவித்த காய்கறிகள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>9. மீன் குழம்பு வதக்கல்:</b> மீன் துண்டுகள் & காய்கறிகள் (வறுக்காத மீன்).</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>10. கத்திரிக்காய் காரக்குழம்பு:</b> பருப்பு கத்திரிக்காய் குழம்பு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>11. சௌசௌ பருப்பு கூட்டு:</b> நீர்ச்சத்து மிகுந்த காய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>12. சாம்பல் பூசணிக்காய் மசியல்:</b> உடல் சூட்டைத் தணிக்கும்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>13. அரைக்கீரை பொரியல்:</b> சீரகம் பூண்டு தட்டிப்போட்டது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>14. முருங்கைக்கீரை பொரியல்:</b> இரும்புச்சத்து நிறைந்தது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>15. அவித்த நாட்டுக்கோழி வதக்கல்:</b> கொழுப்பு அற்ற கோழி துண்டுகள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>16. பாவக்காய் வதக்கல்:</b> சர்க்கரை குறைக்கும் பாவக்காய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>17. வாழைப்பூ பொரியல்:</b> குடல் ஆரோக்கியத்திற்கு சிறந்தது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>18. வாழைத்தண்டு கூட்டு:</b> நார்சத்து நிறைந்த வாழைத்தண்டு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>19. கொண்டைக்கடலை குழம்பு:</b> அரிசி இல்லாமல் குழம்பு மட்டும்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>20. வெள்ளரிக்காய் தக்காளி சாலட்:</b> உணவுக்கு முன் 1 கிண்ணம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>21. பசலைக்கீரை தால்:</b> பாசிப்பயறு பசலைக்கீரை மசியல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>22. நூல்கோல் கூட்டு:</b> அவித்த நூல்கோல் + பருப்பு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>23. முட்டைக்கோஸ் பொரியல்:</b> தக்காளி போட்ட வதக்கல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>24. கொத்தவரங்காய் வதக்கல்:</b> அவித்து தாளித்தது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>25. வெண்பூசணி மோர் குழம்பு:</b> நீர்த்த மோரில் செய்த குழம்பு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>26. பொன்னாங்கண்ணி கீரை வதக்கல்:</b> கண் பார்வைக்கு நல்லது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>27. பிஞ்சு முருங்கைக்காய் மசியல்:</b> அவித்த சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>28. காளான் தக்காளி குழம்பு:</b> அரிசியின்றி காளான் மட்டும்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>29. டோஃபு காய்கறி வதக்கல்:</b> 100g சோயா பன்னீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>30. தண்டுக்கீரை பொரியல்:</b> வெங்காயம் சீரகம் வதக்கல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>31. அத்திப்பிஞ்சு வதக்கல்:</b> வயிற்றுப் புண்ணை ஆற்றும்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>32. முள்ளங்கி சாம்பார் சூப் (காரமின்றி):</b> நீர்ச்சத்து முள்ளங்கி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>33. பாசிப்பயறு சாம்பார் & கத்திரிக்காய்:</b> தடிமனான சாம்பார்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>34. புடலங்காய் தக்காளி வதக்கல்:</b> நீர்ச்சத்து காய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>35. பாலக்கீரை பருப்பு கடைசல்:</b> 1 கப் மசியல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>36. அவித்த நெத்திலி மீன் வதக்கல்:</b> எண்ணெய் இன்றி வதக்கியது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>37. குடைமிளகாய் பன்னீர் கூட்டு:</b> குடைமிளகாய் வதக்கல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>38. சௌசௌ பாசிப்பயறு சாம்பார்:</b> லேசான குழம்பு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>39. சுரைக்காய் இஞ்சி கடையல்:</b> செரிமான கூட்டு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>40. வெண்பூசணி கூட்டு:</b> பாசிப்பயறு மசியல்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>41. கோவைக்காய் பூண்டு வதக்கல்:</b> சர்க்கரை கட்டுப்படுத்தும்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>42. முட்டைக்கோஸ் பாசிப்பயறு சாம்பார்:</b> லேசான சாம்பார்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>43. அவித்த நாட்டுக்கோழி மிளகு வதக்கல்:</b> 100g கோழி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>44. காலிஃபிளவர் தக்காளி மசியல்:</b> அரிசிக்கு மாற்று.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>45. சிறுகீரை பூண்டு கடையல்:</b> கல்லீரல் பாதுகாப்பு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>46. பீன்ஸ் பூண்டு வதக்கல்:</b> நார்ச்சத்து உணவு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>47. வெண்டைக்காய் மோர் குழம்பு:</b> நீர்த்த மோர் குழம்பு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>48. அவித்த சுண்டல் & காய்கறி சாலட்:</b> மதிய உணவு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>49. மணத்தக்காளி கீரை பொரியல்:</b> அல்சர் & கல்லீரலுக்கு நல்லது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-teal-100"><b>50. தடிமனான பாசிப்பயறு தால் சூப்:</b> 1 பெரிய கிண்ணம்.</div>
+                </div>
+            </div>
+
+            <!-- Snacks Accordion (40 items) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden food-section-card">
+                <button onclick="toggleSection('acc-snacks')" class="w-full p-4 text-left flex justify-between items-center bg-slate-50 active:bg-slate-100">
+                    <span class="flex items-center space-x-3">
+                        <span class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </span>
+                        <div>
+                            <span class="text-base font-bold text-slate-800 block">3. மாலை சிற்றுண்டிகள்</span>
+                            <span class="text-[11px] text-amber-700 font-semibold">40+ ஆரோக்கிய உணவுகள்</span>
+                        </div>
+                    </span>
+                    <i id="acc-snacks-icon" class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="acc-snacks" class="hidden p-4 border-t border-slate-100 bg-amber-50/20 text-slate-700 space-y-2 text-xs searchable-list">
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>1. வறுத்த வேர்க்கடலை:</b> கைப்பிடி அளவு (உப்பற்றது).</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>2. அவித்த வேர்க்கடலை:</b> 1/2 கப் அவித்த நிலக்கடலை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>3. வெள்ளரிக்காய் துண்டுகள்:</b> எலுமிச்சை & மிளகு தூவியது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>4. கேரட் துண்டுகள்:</b> 1 சிறிய கேரட்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>5. அவித்த சோயா பீன்ஸ்:</b> 1/2 கப் சோயா.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>6. சர்க்கரையற்ற இஞ்சி டீ:</b> சுடச்சுட இஞ்சி தேநீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>7. கிரீன் டீ (Green Tea):</b> பசுமை தேநீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>8. பிளாக் காபி:</b> சர்க்கரை இல்லாத காபி.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>9. முளைகட்டிய பயறு சுண்டல்:</b> 1/2 கப் பயறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>10. வறுத்த பொட்டுக்கடலை:</b> 2 ஸ்பூன் பொரி கடலை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>11. ஊறவைத்த பாதாம்:</b> 4 தோல் உரித்த பாதாம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>12. வால்நட் பருப்பு:</b> 2 வால்நட்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>13. பூசணி விதைகள்:</b> 1 ஸ்பூன் வறுத்த விதை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>14. சீரகக் குடிநீர்:</b> மிளகு சீரகம் தட்டிய நீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>15. நெல்லிக்காய் சாறு:</b> உப்பு மிளகு தூவிய சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>16. அவித்த காராமணி:</b> 1/2 கப் தட்டுப்பயறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>17. லெமன் டீ:</b> சர்க்கரையற்ற எலுமிச்சை டீ.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>18. சுட்ட காளான் துண்டுகள்:</b> மிளகு தூவியது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>19. அவித்த பன்னீர் துண்டுகள்:</b> 50g பன்னீர் + மிளகு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>20. துளசி மூலிகை டீ:</b> மூலிகை நீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>21. கொய்யாப்பழ துண்டுகள்:</b> 1/2 கொய்யாப்பழம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>22. கொள்ளு ரசம் சூப்:</b> கொழுப்பு குறைக்கும் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>23. தக்காளி சூப்:</b> சர்க்கரை இல்லாத தக்காளி சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>24. மிக்ஸ்டு வெஜிடபிள் சூப்:</b> காய்கறி சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>25. நீர்த்த மோர்:</b> பெருங்காயம் சீரகம் போட்ட மோர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>26. சுட்ட கொண்டைக்கடலை:</b> லேசாக வறுத்த சென்னா.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>27. புதினா தேநீர்:</b> புதினா இஞ்சி டீ.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>28. சூரியகாந்தி விதைகள்:</b> 1 ஸ்பூன் விதைகள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>29. அவித்த கொள்ளு சுண்டல்:</b> 1/2 கப் கொள்ளு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>30. பச்சை ஆப்பிள் துண்டுகள்:</b> half பச்சை ஆப்பிள்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>31. இஞ்சி ஏலக்காய் பிளாக் டீ:</b> சுடச்சுட டீ.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>32. அவித்த டோஃபு துண்டுகள்:</b> 50g டோஃபு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>33. வெந்தய நீர்:</b> 1 டம்ளர் வெந்தய நீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>34. முட்டைக்கோஸ் சாலட்:</b> எலுமிச்சை சாறு தூவியது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>35. பூண்டு சுடச்சுட கஷாயம்:</b> பூண்டு மிளகு நீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>36. மாதுளை விதைகள்:</b> 2 ஸ்பூன் மாதுளை.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>37. சோயா சங்ஸ் வதக்கல்:</b> 1/2 கப் அவித்த சோயா.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>38. ஓம நீர்:</b> செரிமானத்திற்கு உதவும் ஓம நீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>39. கொத்தமல்லி கஷாயம்:</b> மூலிகைக் குடிநீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-amber-100"><b>40. அவித்த தட்டுப்பயறு:</b> மிளகு தூவிய சுண்டல்.</div>
+                </div>
+            </div>
+
+            <!-- Dinner Accordion (45 items) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden food-section-card">
+                <button onclick="toggleSection('acc-dinner')" class="w-full p-4 text-left flex justify-between items-center bg-slate-50 active:bg-slate-100">
+                    <span class="flex items-center space-x-3">
+                        <span class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-moon"></i>
+                        </span>
+                        <div>
+                            <span class="text-base font-bold text-slate-800 block">4. இரவு உணவுகள்</span>
+                            <span class="text-[11px] text-indigo-700 font-semibold">45+ ஆரோக்கிய சூப்கள் & உணவுகள்</span>
+                        </div>
+                    </span>
+                    <i id="acc-dinner-icon" class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-200"></i>
+                </button>
+                <div id="acc-dinner" class="hidden p-4 border-t border-slate-100 bg-indigo-50/20 text-slate-700 space-y-2 text-xs searchable-list">
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>1. காளான் தெளிவு சூப்:</b> காளான், பூண்டு, மிளகு சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>2. ப்ரோக்கோலி தால் சூப்:</b> ப்ரோக்கோலி பாசிப்பயறு சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>3. கிரில் செய்த பன்னீர்:</b> 100g பன்னீர் + மிளகு சீரகம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>4. டோஃபு வதக்கல்:</b> சோயா பன்னீர் 100g + குடைமிளகாய்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>5. சுரைக்காய் சூப்:</b> சீரகம் பூண்டு தட்டிய சுரைக்காய் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>6. சாம்பல் பூசணி சூப்:</b> மிளகு தூவிய வெண்பூசணி சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>7. நாட்டுக்கோழி சாறு:</b> கொழுப்பு அற்ற அவித்த சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>8. அவித்த மீன் துண்டுகள்:</b> வறுக்காத 100g அவித்த மீன்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>9. முட்டைக்கோஸ் கேரட் சூப்:</b> காய்கறி சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>10. 2 அவித்த முட்டை வெள்ளைக்கரு:</b> மிளகுத்தூளிட்டது.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>11. பாலக்கீரை சூப்:</b> பாலக்கீரை சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>12. முருங்கைக்கீரை சாறு:</b> மிளகு பூண்டு தட்டிய சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>13. அவித்த சோயா சங்ஸ் சாலட்:</b> 1/2 கப் சோயா மீல்மேக்கர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>14. வெண்டைக்காய் சூப்:</b> வெண்டைக்காய் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>15. அவித்த சுண்டல் சாலட்:</b> 1/2 கப் வேகவைத்த சென்னா.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>16. புடலங்காய் சூப்:</b> நீர்ச்சத்து புடலங்காய் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>17. தக்காளி பூண்டு சூப்:</b> செரிமான சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>18. காளான் வதக்கல்:</b> 100g காளான் + வெங்காயம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>19. பன்னீர் & முட்டை ஸ்கிராம்பிள்:</b> இரவு நேர புரதம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>20. சௌசௌ சாறு / சூப்:</b> மிளகு தூவிய சௌசௌ.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>21. நண்டு சாறு (Crab Soup):</b> சளி நீக்கும் சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>22. வெள்ளரி & தக்காளி சாலட்:</b> 1 கிண்ணம் சாலட்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>23. மிக்ஸ்டு காய்கறி அவித்தது:</b> கேரட், பீன்ஸ், காலிஃபிளவர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>24. ஆட்டுக்கால் சூப் (Fat-free):</b> கொழுப்பு நீக்கப்பட்ட சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>25. பாசிப்பயறு கஞ்சி (அரிசி இன்றி):</b> பயறு அவித்த தண்ணீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>26. நூல்கோல் மிளகு சூப்:</b> அவித்த சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>27. முட்டை வெள்ளைக்கரு பூண்டு சூப்:</b> 2 முட்டை சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>28. பூசணிக்காய் இஞ்சி சூப்:</b> சுடச்சுட சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>29. கோவைக்காய் அவித்த சாலட்:</b> லேசான இரவு உணவு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>30. தட்டுப்பயறு தால் சூப்:</b> பருப்பு சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>31. டோஃபு சீரக வதக்கல்:</b> 100g சோயா பன்னீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>32. நெத்திலி மீன் சாறு சூப்:</b> மீன் அவித்த சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>33. காலிஃபிளவர் மிளகு சூப்:</b> துருவிய காலிஃபிளவர் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>34. இஞ்சி பூண்டு வெஜ் சூப்:</b> செரிமான சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>35. அவித்த காராமணி சாலட்:</b> இரவு உணவு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>36. முட்டைக்கோஸ் சீரக சூப்:</b> வெஜ் சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>37. அவித்த நாட்டுக்கோழி சூப்:</b> 1 கிண்ணம் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>38. சுரைக்காய் பாசிப்பயறு சூப்:</b> லேசான சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>39. பன்னீர் குடைமிளகாய் வதக்கல்:</b> 100g பன்னீர்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>40. கொள்ளு இஞ்சி சாறு:</b> கொழுப்பு நீக்கும் சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>41. மணத்தக்காளி சாறு:</b> குடல் புண் ஆற்றும் சூப்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>42. அவித்த சோயா பீன்ஸ் சாலட்:</b> புரத உணவு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>43. சாம்பல் பூசணி சீரக சாறு:</b> சூடு தணிக்கும் சாறு.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>44. 3 முட்டை வெள்ளைக்கரு வதக்கல்:</b> இரவு புரதம்.</div>
+                    <div class="p-2 bg-white rounded-lg border border-indigo-100"><b>45. பிளாக் டீ / இஞ்சி டீ:</b> இரவு உணவிற்கு பின் (சர்க்கரையின்றி).</div>
+                </div>
+            </div>
+
+            <!-- Strictly Avoid Accordion (COMPREHENSIVE MEGA LIST) -->
+            <div class="bg-red-50 rounded-2xl border border-red-200 shadow-sm overflow-hidden food-section-card">
+                <button onclick="toggleSection('acc-avoid')" class="w-full p-4 text-left flex justify-between items-center bg-red-100/80 active:bg-red-200">
+                    <span class="flex items-center space-x-3">
+                        <span class="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-ban"></i>
+                        </span>
+                        <div>
+                            <span class="text-base font-bold text-red-900 block">முற்றிலும் தவிர்க்க வேண்டிய உணவுகள்</span>
+                            <span class="text-[11px] text-red-700 font-semibold">200+ உணவுகளின் மெகா பட்டியல்</span>
+                        </div>
+                    </span>
+                    <i id="acc-avoid-icon" class="fa-solid fa-chevron-down text-red-700 transition-transform duration-200"></i>
+                </button>
+                <div id="acc-avoid" class="hidden p-4 border-t border-red-200 bg-white space-y-4 text-sm searchable-list">
+                    
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 1. அரிசி & தானியங்கள் (அனைத்தும்):</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            வெள்ளை அரிசி, பச்சரிசி, புழுங்கல் அரிசி, பாஸ்மதி அரிசி, சீரக சம்பா, இட்லி, தோசை, ஆப்பம், இடியாப்பம், புட்டு, ரவை, உப்புமா, கேசரி, மைதா, கோதுமை சப்பாத்தி, பூரி, பரோட்டா, நாண், நூடுல்ஸ், பாஸ்தா, மேகி, பிரெட், பண்ணு, பிஸ்கட், சேமியா, ஜவ்வரிசி, பொரி, அவல், அவல் உப்புமா, சோளப் பொரி (Popcorn).
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 2. சிறுதானியங்கள் (அனைத்தும் தவிர்க்கவும்):</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            ராகி (கேழ்வரகு), ராகி களி, ராகி தோசை, கம்பு, கம்பு கூழ், சோளம், தினை, சாமை, வரகு, குதிரைவாலி, காடைக்கண்ணி, சிறுதானிய பிஸ்கட், சிறுதானிய கஞ்சிகள் அனைத்தும்.
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 3. கிழங்கு வகைகள்:</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            உருளைக்கிழங்கு, உருளைக்கிழங்கு வறுவல், மரவள்ளிக்கிழங்கு, சர்க்கரைவள்ளிக்கிழங்கு, சேப்பங்கிழங்கு, கருணைக்கிழங்கு, சேனைக்கிழங்கு, உருளை சிப்ஸ், பிரெஞ்ச் பிரைஸ், ஆலு போண்டா, ஆலு பரோட்டா.
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 4. பழங்கள் (அதிக சர்க்கரை உள்ளவை):</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            மாம்பழம், வாழைப்பழம் (செவ்வாழை, பூவன், மொந்தன் அனைத்தும்), சப்போட்டா, பலாப்பழம், திராட்சை (கருப்பு & பச்சை), சீதாப்பழம், பேரீச்சம்பழம், அத்திப்பழம் (உலர்ந்தது), உலர் திராட்சை (கிஸ்மிஸ்), தர்பூசணி (அதிக அளவில்), அன்னாசிப்பழம், கேன் பழங்கள்.
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 5. இனிப்புகள் & சர்க்கரை:</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            வெள்ளை சர்க்கரை, வெல்லம், நாட்டுச்சர்க்கரை, கருப்பட்டி, பனங்கற்கண்டு, தேன், சாக்லேட், ஐஸ்கிரீம், கேக், குலாப் ஜாமுன், லட்டு, அல்வா, மைசூர்பா, பாயாசம், கேசரி, ஜிலேபி, சோன் பப்டி, ரசகுல்லா, மில்க் ஸ்வீட்ஸ்.
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 6. எண்ணெயில் பொரித்த பலகாரங்கள்:</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            உளுந்தம்பருப்பு வடை, மசால் வடை, பஜ்ஜி, போண்டா, சமோசா, முறுக்கு, தட்டை, சீடை, மிக்சர், காராசேவ், ஓமப்பொடி, பக்கடா, எண்ணெயில் வறுத்த மீன்/கோழி, சிக்கன் 65, பிரெஞ்ச் பிரைஸ், ஸ்பிரிங் ரோல்.
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 7. பானங்கள் & பாக்கெட் உணவுகள்:</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            கோக், எப்ஸி, ஸ்பிரைட், மிரண்டா போன்ற குளிர்பானங்கள், பாக்கெட் ஜூஸ்கள், ஹார்லிக்ஸ், பூஸ்ட், போன்Vita, சர்க்கரை போட்ட காபி/டீ, மதுபானங்கள், பேக் செய்யப்பட்ட சிப்ஸ்/நொறுக்குத்தீனிகள், எனர்ஜி டிரிங்க்ஸ்.
+                        </p>
+                    </div>
+
+                    <div class="bg-red-50/50 p-3 rounded-xl border border-red-100">
+                        <span class="font-bold text-red-800 text-base block mb-1">❌ 8. கொழுப்பு நிறைந்த இறைச்சி, நெய் & எண்ணெய்கள்:</span>
+                        <p class="text-slate-700 text-xs leading-relaxed">
+                            ஆட்டுக்கறி (ரெட் மீட்), பண்ணைக்கோழி தோல், முட்டை மஞ்சக்கரு (அதிகளவில்), நெய் (அதிகளவில்), டால்டா, வனஸ்பதி, பாம் ஆயில், ரீஃபைண்ட் ஆயில் (அதிகளவில்), மேயோனைஸ் (Mayonnaise), சீஸ், பட்டர், கிரீம்.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: நாட்கள் (WEEKLY PLAN) -->
+        <section id="tab-days" class="tab-content hidden space-y-4">
+            
+            <!-- Day Pills Slider -->
+            <div class="flex overflow-x-auto space-x-2 py-1 no-scrollbar" id="dayButtons">
+                <button onclick="selectDay(0)" class="day-btn day-active flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border border-slate-200">திங்கள்</button>
+                <button onclick="selectDay(1)" class="day-btn flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border border-slate-200">செவ்வாய்</button>
+                <button onclick="selectDay(2)" class="day-btn flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border border-slate-200">புதன்</button>
+                <button onclick="selectDay(3)" class="day-btn flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border border-slate-200">வியாழன்</button>
+                <button onclick="selectDay(4)" class="day-btn flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border border-slate-200">வெள்ளி</button>
+                <button onclick="selectDay(5)" class="day-btn flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border border-slate-200">சனி</button>
+                <button onclick="selectDay(6)" class="day-btn flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-bold bg-white text-slate-700 border border-slate-200">ஞாயிறு</button>
+            </div>
+
+            <!-- Daily Card Header -->
+            <div class="bg-emerald-700 text-white p-3.5 rounded-2xl flex justify-between items-center shadow">
+                <h3 id="currentDayTitle" class="font-bold text-base">திங்கட்கிழமை அட்டவணை</h3>
+                <i class="fa-regular fa-calendar-check text-xl text-emerald-200"></i>
+            </div>
+
+            <!-- Day Plan Container -->
+            <div id="dayPlanCards" class="space-y-3">
+                <!-- Dynamic Content Loads via JS -->
+            </div>
+
+        </section>
+
+        <!-- EXPANDED TAB 3: வகைப்பாடுகள் (EXTENSIVE CATEGORIES GUIDE) -->
+        <section id="tab-categories" class="tab-content hidden space-y-4">
+            
+            <div class="bg-teal-50 border-l-4 border-teal-600 p-4 rounded-r-xl shadow-sm">
+                <h2 class="text-base font-bold text-teal-900 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-teal-600"></i> உணவுப் பொருட்கள் விரிவான வகைப்பாடு
+                </h2>
+                <p class="text-xs text-teal-700 mt-1">எந்தெந்த உணவுகளைச் சேர்க்கலாம் மற்றும் எவற்றை முற்றிலும் தவிர்க்க வேண்டும் என்பதற்கான தெளிவான மருத்துவ வழிகாட்டி.</p>
+            </div>
+
+            <!-- 1. காய்கறிகள் & கீரைகள் (Vegetables & Greens Guide) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+                <h3 class="font-bold text-base text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i class="fa-solid fa-carrot text-orange-500"></i> 1. காய்கறிகள் & கீரைகள் வழிகாட்டி
+                </h3>
+                
+                <div class="bg-emerald-50 p-3.5 rounded-xl border border-emerald-100 space-y-2">
+                    <span class="font-bold text-emerald-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> தாராளமாக சேர்க்க வேண்டிய காய்கறிகள் (30+ வகைகள்):
+                    </span>
+                    <p class="text-slate-700 text-xs leading-relaxed">
+                        <b>வெள்ளரிக்காய் (தினமும் பச்சையாக உண்ணலாம்)</b>, சுரைக்காய், சாம்பல் பூசணிக்காய், புடலங்காய், கோவைக்காய், வெண்டைக்காய், முட்டைக்கோஸ், காலிஃபிளவர், ப்ரோக்கோலி, பீன்ஸ், கேரட், நூல்கோல், சௌசௌ, முருங்கைக்காய், பாவக்காய், வாழைத்தண்டு, வாழைப்பூ, அத்திப்பிஞ்சு, கத்திரிக்காய், குடைமிளகாய், தக்காளி, வெங்காயம், பூண்டு, இஞ்சி, சுண்டக்காய்.
+                    </p>
+                </div>
+
+                <div class="bg-teal-50 p-3.5 rounded-xl border border-teal-100 space-y-2">
+                    <span class="font-bold text-teal-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-leaf text-teal-600"></i> ஆரோக்கியமான கீரை வகைகள் (வாரத்தில் 4-5 நாட்கள்):
+                    </span>
+                    <p class="text-slate-700 text-xs leading-relaxed">
+                        <b>மணத்தக்காளி கீரை (Fatty Liver மற்றும் குடல் புண்ணிற்கு சிறந்தது)</b>, சிறுகீரை, அரைக்கீரை, முருங்கைக்கீரை, பாலக்கீரை, பசலைக்கீரை, பொன்னாங்கண்ணி கீரை, வல்லாரை கீரை, முடக்கத்தான் கீரை, தூதுவளை.
+                    </p>
+                </div>
+
+                <div class="bg-red-50 p-3.5 rounded-xl border border-red-100 space-y-2">
+                    <span class="font-bold text-red-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-xmark text-red-600"></i> முற்றிலும் தவிர்க்க வேண்டிய கிழங்கு வகைகள்:
+                    </span>
+                    <p class="text-slate-700 text-xs leading-relaxed">
+                        உருளைக்கிழங்கு, மரவள்ளிக்கிழங்கு, சர்க்கரைவள்ளிக்கிழங்கு, சேப்பங்கிழங்கு, கருணைக்கிழங்கு, சேனைக்கிழங்கு (அதிக மாவுச்சத்து மற்றும் கலோரி கொண்டவை).
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. பழங்கள் வழிகாட்டி (Fruits Guide) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+                <h3 class="font-bold text-base text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i class="fa-solid fa-apple-whole text-red-500"></i> 2. பழங்கள் வழிகாட்டி
+                </h3>
+                
+                <div class="bg-emerald-50 p-3.5 rounded-xl border border-emerald-100 space-y-2">
+                    <span class="font-bold text-emerald-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> அனுமதிக்கப்பட்ட பழங்கள் (குறைந்த அளவில்):
+                    </span>
+                    <ul class="text-slate-700 text-xs space-y-1 pl-2">
+                        <li>• <b>கொய்யாப்பழம்:</b> 1 சிறிய கொய்யா (சர்க்கரை நோயைக் கட்டுப்படுத்தும்).</li>
+                        <li>• <b>நெல்லிக்காய்:</b> தினமும் 1 நெல்லிக்காய் (வைட்டமின் C செறிந்தது).</li>
+                        <li>• <b>பச்சை ஆப்பிள் (Green Apple):</b> 1/2 பழம் மட்டும்.</li>
+                        <li>• <b>மாதுளை:</b> 1/2 கிண்ணம் விதைகள் மட்டும்.</li>
+                        <li>• <b>எலுமிச்சை சாறு:</b> சர்க்கரை இன்றி மிளகுத்தூள் சேர்த்து பருகலாம்.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-red-50 p-3.5 rounded-xl border border-red-100 space-y-2">
+                    <span class="font-bold text-red-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-xmark text-red-600"></i> முற்றிலும் தவிர்க்க வேண்டிய பழங்கள்:
+                    </span>
+                    <p class="text-slate-700 text-xs leading-relaxed">
+                        மாம்பழம், வாழைப்பழம் (செவ்வாழை, பூவன், மொந்தன் உட்பட அனைத்தும்), சப்போட்டா, பலாப்பழம், திராட்சை (கருப்பு & பச்சை), சீதாப்பழம், பேரீச்சம்பழம், உலர் திராட்சை (கிஸ்மிஸ்), உலர்ந்த அத்திப்பழம், கேன் பழங்கள் & பாக்கெட் ஜூஸ்கள்.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3. பால், தயிர், மோர் & முட்டை (Dairy & Eggs Detailed Guide) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+                <h3 class="font-bold text-base text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i class="fa-solid fa-cow text-blue-500"></i> 3. பால், தயிர், மோர் & முட்டை வழிகாட்டி
+                </h3>
+                
+                <div class="bg-emerald-50 p-3.5 rounded-xl border border-emerald-100 space-y-2 text-xs">
+                    <span class="font-bold text-emerald-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> சேர்க்க வேண்டியவை & எப்படி சாப்பிடுவது?
+                    </span>
+                    <p><b>🥛 மோர் (பரிந்துரைக்கப்படுகிறது):</b> பெருங்காயம், சீரகம், கருவேப்பிலை போட்ட <b>நீர்த்த மோர் தினமும் 1-2 டம்ளர் தாராளமாக பருகலாம்.</b> இது கல்லீரலையும் செரிமானத்தையும் சீராக்கும்.</p>
+                    <p><b>🥣 தயிர்:</b> பாடை நீக்கப்பட்ட (Low-fat) கெட்டி இல்லாத தயிர் 1/2 கப் மட்டும் சேர்க்கலாம்.</p>
+                    <p><b>🥚 முட்டை வெள்ளைக்கரு (Protein Source):</b> தினமும் 2 முதல் 4 முட்டைகளின் <b>வெள்ளைக்கரு தாராளமாகச் சாப்பிடலாம்.</b> இது உடலுக்குத் தேவையான புரதத்தைத் தரும்.</p>
+                </div>
+
+                <div class="bg-red-50 p-3.5 rounded-xl border border-red-100 space-y-2 text-xs">
+                    <span class="font-bold text-red-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-xmark text-red-600"></i> தவிர்க்க வேண்டியவை & எச்சரிக்கை!
+                    </span>
+                    <p><b>❌ முட்டை மஞ்சக்கரு (Egg Yolk Warning):</b> <b>மூன்று நேரமும் மஞ்சக்கரு சாப்பிடவே கூடாது!</b> Fatty Liver Grade II உள்ளதால் மஞ்சக்கருவில் உள்ள அதிக கொழுப்பு கல்லீரலில் படிந்து பாதிப்பை அதிகரிக்கும். வாரத்திற்கு 1 அல்லது 2 மஞ்சக்கருவுக்கு மேல் சாப்பிடக்கூடாது.</p>
+                    <p><b>❌ கெட்டித் தயிர் & பாலாடை:</b> பாலாடை நீக்கப்படாத கெட்டித் தயிர் மற்றும் பசும்பால் ஆடைகள் தவிர்க்கப்பட வேண்டும்.</p>
+                    <p><b>❌ நெய், வெண்ணெய், மேயோனைஸ்:</b> நெய் முற்றிலும் தவிர்க்கப்பட வேண்டும் அல்லது சமைக்கும் போது உணவில் 1/2 ஸ்பூன் மட்டுமே சேர்க்கலாம்.</p>
+                    <p><b>❌ சீஸ் (Cheese) & பட்டர்:</b> பாலாடைக்கட்டி மற்றும் வெண்ணெய் கூடவே கூடாது.</p>
+                </div>
+            </div>
+
+            <!-- 4. நட்ஸ் & விதைகள் (Nuts & Seeds Guide) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+                <h3 class="font-bold text-base text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i class="fa-solid fa-bowl-rice text-amber-600"></i> 4. நட்ஸ் & விதைகள் வழிகாட்டி
+                </h3>
+                
+                <div class="bg-emerald-50 p-3.5 rounded-xl border border-emerald-100 text-xs space-y-1.5">
+                    <span class="font-bold text-emerald-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> சேர்க்க வேண்டிய நல்ல கொழுப்பு உணவுகள்:
+                    </span>
+                    <p><b>✅ ஊறவைத்த பாதாம்:</b> தினமும் 4 பாதாம் பருப்புகளை இரவு ஊறவைத்து தோல் உரித்து சாப்பிடலாம்.</p>
+                    <p><b>✅ வால்நட் (Walnut):</b> தினமும் 2 வால்நட் பருப்புகள் (மூளை மற்றும் இதய ஆரோக்கியத்திற்கு நல்லது).</p>
+                    <p><b>✅ வறுத்த/அவித்த வேர்க்கடலை:</b> கைப்பிடி அளவு உப்பு இல்லாத வேர்க்கடலை மாலை சிற்றுண்டியாகச் சேர்க்கலாம்.</p>
+                    <p><b>✅ பூசணி விதைகள் & சூரியகாந்தி விதைகள்:</b> 1 ஸ்பூன் வறுத்த விதைகள் சேர்க்கலாம்.</p>
+                </div>
+
+                <div class="bg-red-50 p-3.5 rounded-xl border border-red-100 text-xs space-y-1">
+                    <span class="font-bold text-red-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-xmark text-red-600"></i> தவிர்க்க வேண்டிய நட்ஸ்:
+                    </span>
+                    <p><b>❌ முந்திரி பருப்பு (Cashew):</b> அதிக கொழுப்பு உள்ளதால் முந்திரி தவிர்க்க வேண்டும்.</p>
+                    <p><b>❌ கார நட்ஸ் & வறுத்த பாக்கெட் நட்ஸ்:</b> உப்பு மற்றும் மசாலா தூவிய பாக்கெட் நட்ஸ் கூடாது.</p>
+                </div>
+            </div>
+
+            <!-- 5. தானியங்கள் & சிறுதானியங்கள் (Cereals & Millets Rules) -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-3">
+                <h3 class="font-bold text-base text-slate-800 flex items-center gap-2 border-b border-slate-100 pb-2">
+                    <i class="fa-solid fa-wheat-awn-circle-exclamation text-amber-700"></i> 5. தானியங்கள் & சிறுதானியங்கள் விதிகள்
+                </h3>
+                
+                <div class="bg-red-50 p-3.5 rounded-xl border border-red-100 text-xs space-y-2">
+                    <span class="font-bold text-red-900 text-xs block flex items-center gap-1.5">
+                        <i class="fa-solid fa-ban text-red-600"></i> ஏன் அரிசி மற்றும் சிறுதானியங்கள் தவிர்க்கப்பட வேண்டும்?
+                    </span>
+                    <p class="text-slate-700 leading-relaxed">
+                        Fatty Liver Grade II மற்றும் எடையைக் குறைக்க <b>கார்போஹைட்ரேட் (Carbohydrates) முற்றிலும் குறைக்கப்பட வேண்டும்.</b> அரிசி, மைதா, ரவை மட்டுமல்லாது கேழ்வரகு (ராகி), கம்பு, தினை, சாமை, வரகு போன்ற <b>சிறுதானியங்களிலும் அதிக மாவுச்சத்து உள்ளதால் அவை இரத்த சர்க்கரையையும் கல்லீரல் கொழுப்பையும் அதிகரிக்கும்.</b> எனவே தானியங்களுக்குப் பதிலாக பாசிப்பயறு, சுண்டல், காய்கறிகள் மற்றும் கீரைகளை உணவாகக் கொள்ள வேண்டும்.
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 4: மருத்துவ குறிப்பு (MEDICAL ADVICE) -->
+        <section id="tab-advice" class="tab-content hidden space-y-4">
+            
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl shadow-sm">
+                <h2 class="text-base font-bold text-amber-900 flex items-center gap-2">
+                    <i class="fa-solid fa-user-doctor text-amber-600"></i> முக்கியமான ஆரோக்கிய வழிகாட்டுதல்
+                </h2>
+                <p class="text-xs text-amber-800 mt-1">கீழ்கண்ட விதிகளை தினமும் கண்டிப்பாக பின்பற்றவும்.</p>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4 text-sm text-slate-700">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-weight-hanging text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-base">1. கனமான எடைகளை தூக்கக் கூடாது</h4>
+                        <p class="text-slate-600 text-xs mt-0.5">Hernia பிரச்சனை உள்ளதால் கனமான பாத்திரங்கள், தண்ணீர் குடங்கள் அல்லது எடைகளை தூக்குவதை முற்றிலும் தவிர்க்கவும்.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 border-t border-slate-100 pt-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-bottle-droplet text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-base">2. மிகக் குறைந்த எண்ணெய் பயன்பாடு</h4>
+                        <p class="text-slate-600 text-xs mt-0.5">Fatty Liver Grade II உள்ளதால் நாளொன்றுக்கு 2 சிறிய ஸ்பூன் நல்லெண்ணெய் அல்லது செக்கு எண்ணெய் மட்டுமே உணவில் சேர்க்க வேண்டும்.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 border-t border-slate-100 pt-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-glass-water text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-base">3. போதுமான தண்ணீர் பருகவும்</h4>
+                        <p class="text-slate-600 text-xs mt-0.5">தினமும் 2.5 முதல் 3 லிட்டர் வெதுவெதுப்பான நீர் சிறந்தது. ஒரே நேரத்தில் அதிக தண்ணீர் குடிக்காமல் சிறிது சிறிதாக பருகவும்.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start space-x-3 border-t border-slate-100 pt-3">
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-clock text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-base">4. இரவு உணவு நேரம்</h4>
+                        <p class="text-slate-600 text-xs mt-0.5">இரவு உணவை கண்டிப்பாக இரவு 7:30 - 8:00 மணிக்குள்ளாக முடித்துக்கொள்ள வேண்டும். சாப்பிட்ட உடனே படுக்க வேண்டாம்.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Water Tracker Widget -->
+            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200 shadow-sm space-y-3 mt-4">
+                <div class="flex justify-between items-center">
+                    <h4 class="font-bold text-blue-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-blue-600"></i> இன்றைய தண்ணீர் டிராக்கர் (Water Tracker)
+                    </h4>
+                    <span id="waterCountText" class="text-xs font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">0 / 8 டம்ளர்</span>
+                </div>
+                <p class="text-[11px] text-blue-800">தினமும் 8 டம்ளர் தண்ணீர் குடிக்க இலக்கை தொடவும் (ஒவ்வொரு டம்ளருக்கும் கிளிக் செய்யவும்):</p>
+                <div class="grid grid-cols-8 gap-1.5" id="waterGlassesGrid">
+                    <!-- Dynamic 8 Glasses -->
+                </div>
+                <button onclick="resetWaterTracker()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-1.5 rounded-lg shadow transition">Reset Water Count</button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Tabs (4 Sections) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2.5 px-2 shadow-2xl z-40">
+        <div class="max-w-md mx-auto grid grid-cols-4 gap-1">
+            <button onclick="switchTab('tab-menu', this)" class="tab-btn active flex flex-col items-center py-1 text-slate-500 transition-all">
+                <i class="fa-solid fa-utensils text-lg mb-0.5"></i>
+                <span class="text-[11px] leading-tight font-semibold">உணவுப் பட்டியல்</span>
+            </button>
+            <button onclick="switchTab('tab-days', this)" class="tab-btn flex flex-col items-center py-1 text-slate-500 transition-all">
+                <i class="fa-solid fa-calendar-days text-lg mb-0.5"></i>
+                <span class="text-[11px] leading-tight font-semibold">நாட்கள்</span>
+            </button>
+            <button onclick="switchTab('tab-categories', this)" class="tab-btn flex flex-col items-center py-1 text-slate-500 transition-all">
+                <i class="fa-solid fa-layer-group text-lg mb-0.5"></i>
+                <span class="text-[11px] leading-tight font-semibold">வகைப்பாடு</span>
+            </button>
+            <button onclick="switchTab('tab-advice', this)" class="tab-btn flex flex-col items-center py-1 text-slate-500 transition-all">
+                <i class="fa-solid fa-user-doctor text-lg mb-0.5"></i>
+                <span class="text-[11px] leading-tight font-semibold">மருத்துவக் குறிப்பு</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Weekly Diet Data
+        const weeklyMenuData = [
+            {
+                day: "திங்கட்கிழமை",
+                early: "சீரகத் தண்ணீர் (1 டம்ளர்)",
+                bf: "பாசிப்பயறு சுண்டல் (1 கப்) + 2 அவித்த முட்டை வெள்ளைக்கரு",
+                lunch: "சுரைக்காய் கூட்டு + கீரை பொரியல் + பாசிப்பயறு தால் சூப்",
+                snacks: "அவித்த கொண்டைக்கடலை + இஞ்சி டீ (சர்க்கரை இன்றி)",
+                dinner: "ப்ரோக்கோலி காய்கறி சூப் + 100 கிராம் பன்னீர்/டோஃபு"
+            },
+            {
+                day: "செவ்வாய்க்கிழமை",
+                early: "வெந்தய நீர் (1 டம்ளர்)",
+                bf: "முட்டைக்கோஸ் பாசிப்பயறு பொரியல் + 2 முட்டை வெள்ளைக்கரு ஓம்லெட்",
+                lunch: "கத்திரிக்காய் காரக்குழம்பு + வெண்டைக்காய் பொரியல் + முளைகட்டிய பயறு சாலட்",
+                snacks: "வெள்ளரிக்காய் & கேரட் சாலட்",
+                dinner: "வெண்டைக்காய் சூப் + அவித்த சுண்டல் சாலட்"
+            },
+            {
+                day: "புதன்கிழமை",
+                early: "எலுமிச்சை மிளகு நீர் (சர்க்கரை இன்றி)",
+                bf: "காராமணி சுண்டல் (1 கப்) + 1 கொய்யாப்பழம்",
+                lunch: "பீன்ஸ் கேரட் பொரியல் + காலிஃபிளவர் ரைஸ் + பருப்பு கடையல்",
+                snacks: "கைப்பிடி வறுத்த வேர்க்கடலை + பிளாக் காபி",
+                dinner: "நாட்டுக்கோழி சூப் (அல்லது) பன்னீர் சூப் + 2 முட்டை வெள்ளைக்கரு"
+            },
+            {
+                day: "வியாழக்கிழமை",
+                early: "சீரக தண்ணீர் (1 டம்ளர்)",
+                bf: "முளைகட்டிய பாசிப்பயறு சாலட் + 2 அவித்த முட்டை வெள்ளைக்கரு",
+                lunch: "சௌசௌ கூட்டு + மணத்தக்காளி கீரை பொரியல் + தால் சூப்",
+                snacks: "அவித்த சோயா பீன்ஸ் + லெமன் டீ",
+                dinner: "சுரைக்காய் சூப் + அவித்த மீன் துண்டுகள் (அல்லது பன்னீர்)"
+            },
+            {
+                day: "வெள்ளிக்கிழமை",
+                early: "வெந்தய நீர் (1 டம்ளர்)",
+                bf: "காலிஃபிளவர் குடைமிளகாய் வதக்கல் + 1 அவித்த முட்டை வெள்ளைக்கரு",
+                lunch: "முருங்கைக்காய் பாசிப்பயறு சாம்பார் (சூப் போல) + கோவைக்காய் பொரியல்",
+                snacks: "வறுத்த பாசிப்பயறு + கிரீன் டீ",
+                dinner: "ப்ரோக்கோலி தால் சூப் + 2 முட்டை வெள்ளைக்கரு"
+            },
+            {
+                day: "சனிக்கிழமை",
+                early: "வெதுவெதுப்பான இஞ்சி நீர்",
+                bf: "பன்னீர் & காய்கறி பூர்ஜி (1 கப்) + பிளாக் டீ",
+                lunch: "பூசணிக்காய் கூட்டு + புடலங்காய் பொரியல் + கொண்டைக்கடலை குழம்பு",
+                snacks: "வெள்ளரிக்காய் துண்டுகள் + எலுமிச்சை சாறு",
+                dinner: "காளான் காய்கறி சூப் + அவித்த சோயா சங்ஸ் வதக்கல்"
+            },
+            {
+                day: "ஞாயிற்றுக்கிழமை",
+                early: "சீரக நீர் (1 டம்ளர்)",
+                bf: "வேகவைத்த முளைகட்டிய தானியங்கள் + 2 முட்டை வெள்ளைக்கரு",
+                lunch: "மீன் குழம்பு (மீன் துண்டுகள் & காய்கறிகள் மட்டும்) + கீரை கடையல்",
+                snacks: "வறுத்த கொண்டைக்கடலை + மூலிகை டீ",
+                dinner: "காய்கறி சூப் (Veg Soup) + 100 கிராம் டோஃபு / பன்னீர்"
+            }
+        ];
+
+        // Bottom Tab Switcher
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
